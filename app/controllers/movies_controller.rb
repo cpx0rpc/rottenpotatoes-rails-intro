@@ -12,6 +12,32 @@ class MoviesController < ApplicationController
 
   def index
     @movies = Movie.all
+		@all_ratings = Movie.pluck(:rating).uniq
+		@selected_ratings = @all_ratings
+		
+		if session[:ratings] != nil
+			@selected_ratings = session[:ratings].keys
+		end
+
+		if session[:sort] != nil
+			@sort = session[:sort]
+		end
+
+		if params[:ratings] != nil
+			@selected_ratings = params[:ratings].keys
+			session[:ratings] = params[:ratings]
+		end
+	
+		if params[:sort] != nil
+			@sort = params[:sort]
+			session[:sort] = params[:sort]
+		end
+		
+		if @sort != nil
+			@movies = Movie.where(rating: @selected_ratings).order("#{@sort} ASC")
+		else
+			@movies = Movie.where(rating: @selected_ratings)
+		end
   end
 
   def new
