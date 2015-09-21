@@ -1,7 +1,7 @@
 class MoviesController < ApplicationController
 
   def movie_params
-    params.require(:movie).permit(:title, :rating, :description, :release_date)
+    params.require(:movie).permit(:title, :rating, :description, :release_date, :sort)
   end
 
   def show
@@ -36,19 +36,25 @@ class MoviesController < ApplicationController
 		if @sort != nil
 			begin
 				@movies = Movie.where(rating: @selected_ratings).order("#{@sort} ASC")
-			rescue ActiveRecord::StatementInvalid
-				flash[:warning] = "Invalid statement"
-				@movies = Movie.all
+				test = @movies.first
+				rescue ActiveRecord::StatementInvalid
+					flash[:warning] = "Invalid statement"
+					@movies = Movie.all
+					redirect_to movies_path
+					session.clear
 			end
 		else
 			begin
 				@movies = Movie.where(rating: @selected_ratings)
-			rescue ActiveRecord::StatementInvalid
-				flash[:warning] = "Invalid statement"
-				@movies = Movie.all
+				test = @movies.first
+				rescue ActiveRecord::StatementInvalid
+					flash[:warning] = "Invalid statement"
+					@movies = Movie.all
+					redirect_to movies_path
+					session.clear
 			end
 		end
-  end
+	end
 
   def new
     # default: render 'new' template
