@@ -34,9 +34,19 @@ class MoviesController < ApplicationController
 		end
 		
 		if @sort != nil
-			@movies = Movie.where(rating: @selected_ratings).order("#{@sort} ASC")
+			begin
+				@movies = Movie.where(rating: @selected_ratings).order("#{@sort} ASC")
+			rescue ActiveRecord::StatementInvalid
+				flash[:warning] = "Invalid statement"
+				@movies = Movie.all
+			end
 		else
-			@movies = Movie.where(rating: @selected_ratings)
+			begin
+				@movies = Movie.where(rating: @selected_ratings)
+			rescue ActiveRecord::StatementInvalid
+				flash[:warning] = "Invalid statement"
+				@movies = Movie.all
+			end
 		end
   end
 
